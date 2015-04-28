@@ -16,10 +16,10 @@ var context = canvas.getContext('2d');
 context.fillStyle = '#0099ff';
 context.font = '20 pt Ubuntu';
 
-context.strokeStyle = '#009933'; // color of grid lines
+context.strokeStyle = '#aaaaaa'; // color of grid lines
 context.beginPath();
 // Draw vertical grid lines
-
+//
 for (var i = 1; i <= (sections + 1); i++) {
     var x = i * gridSize;
     context.fillText(xAxis[i], x - 3 , gridSize * (sections + 1) + (gridSize / 2) );
@@ -34,36 +34,101 @@ for (var i = 1; i <= (sections + 1); i++) {
     context.lineTo(gridSize * (sections + 1), y);
 }
 
+context.lineWidth = 1;
 context.stroke();
 
-var translateAxis = function(point /*array*/) {
+var translateAxis = function(point) {
     var zeroX = gridSize;
     var zeroY = gridSize*(sections + 1);
     return [ zeroX + point[0] * 40 , zeroY - point[1]*40 ];
 };
 
-var drawColorLine = function (start, end, color) {
-  var deltaX, deltaY;
+var paths = [
+              [
+                [[1, 5], [1, 1], [5, 1]],
+                [[2, 5], [2, 4], [3, 4], [3, 2], [5, 2]],
+                [[4, 5], [4, 3], [5, 3]]
+              ],
+              [
+                [[3, 5], [3, 4], [5, 4]]
+              ]
+            ];
+
+paths = paths.map(function (colorPaths) {
+  return colorPaths.map(function (line) {
+    return line.map(function (point) {
+      return translateAxis(point);
+    });
+  });
+});
+
+var color = ['#960a1f', '#225599', '#55ee55', '#342343'];
+
+var state = {
+  colorIndex : 0,
+  colorPathIndex : 0,
+  point : 0,
+  startPoint: 0,
+  endPoint: 0,
+  delta : 0,
+  currPoint : 0,
+  deltaX : 0,
+  deltaY : 1,
+  resetState : function () {
+    this.colorIndex = 0;
+    this.colorPathIndex = 0;
+    this.point = 0;
+  },
+  distance : function(p1, p2) {
+    return Math.abs(p2[0] - p1[0]) + Math.abs(p2[1] - p1[1]);
+  },
+  updateCurr : function () {
+    state.currPoint[0] = state.currPoint[0] + this.deltaX;
+    state.currPoint[1] = state.currPoint[1] + this.deltaY;
+  }
+};
+
+var render = function(start, end, color) {
   context.beginPath();
   context.strokeStyle = color;
-  context.moveTo(start[0], start[1]);
-
-  deltaX = end[0] - start[0];
-  deltaY = end[1] - start[1];
-
-  context.lineTo(end[0], end[1]);
+  context.moveTo(state.currPoint[0], start.currPoint[1]);
+  context.lineTo(state.currPoint[0] + state.deltaX, state.currPoint[1] + state.deltaY);
+  context.lineWidth = 1;
   context.stroke();
 };
 
-drawColorLine([40, 80], [40, 120], '#551188');
+function getAnimationFrame() {
+    return new Promise(function(resolve) {
+        requestAnimationFrame(resolve); // this promise never gets rejected
+    });
+}
 
-var drawColorPathHelper = function (path, color) {
+function frame() {
+  if (state.colorIndex < paths.length) {
+    var line = paths[state.colorIndex][state.colorPathIndex];
+    render(color[state.colorIndex]);
+    console.log(line[state.point]);
+    state.delta += 1;
+    if (state.distance(state.currPoint,state.endPoint) <= 1) {
+      state.point += 1;
+      state.deltaX = state.deltaX === 0 ? 1 : 0;
+      state.deltaY = state.deltaY === 0 ? 1 : 0;
+      state.startPoint = line[state.point];
+      state.currPoint = state.startPoint;
+      state.endPoint = line[state.point + 1];
+      if (state.point >= line.length - 1) {
+          state.point = 0;
+          state.colorPathIndex += 1;
+          if (state.colorPathIndex >= paths[state.colorIndex].length) {
+            state.colorPathIndex = 0;
+            state.colorIndex += 1;
+          }
+      }
+    }
+    getAnimationFrame().then(frame);
+  } else {
+    return Promise.resolve();
+  }
+}
 
-};
-
-var drawColorPath = function (path, color) {
-  path = path.map(function (x) {
-    return translateAxis(x);
-  });
-  return drawColorPath(path, color);
-};
+frame();
