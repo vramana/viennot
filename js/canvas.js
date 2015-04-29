@@ -14,26 +14,28 @@ var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
 function resetCanvas() {
+  var i;
+
   context.fillStyle = '#0099ff';
   context.font = '20 pt Ubuntu';
 
   context.strokeStyle = '#000000'; // color of grid lines
   context.lineWidth = 1;
+
   context.beginPath();
-  // Draw vertical grid lines
-  //
-  for (var i = 1; i <= (sections + 1); i++) {
-      var x = i * gridSize;
-      context.fillText(xAxis[i], x - 3 , gridSize * (sections + 1) + (gridSize / 2) );
-      context.moveTo(x + 0.5, gridSize);
-      context.lineTo(x + 0.5, gridSize * (sections + 1));
-  }
-  // Draw horizontal grid lines
-  for (var i = 1; i <= (sections + 1); i++) {
-      var y = gridSize * i;
-      context.fillText(sections - i + 1 , margin + 10 , y +  5);
-      context.moveTo(gridSize, y + 0.5);
-      context.lineTo(gridSize * (sections + 1), y + 0.5);
+
+  for (i = 1; i <= (sections + 1); i++) {
+    // Draw vertical grid lines
+    var x = i * gridSize;
+    context.fillText(xAxis[i], x - 3 , gridSize * (sections + 1) + (gridSize / 2) );
+    context.moveTo(x + 0.5, gridSize);
+    context.lineTo(x + 0.5, gridSize * (sections + 1));
+
+    // Draw horizontal grid lines
+    var y = gridSize * i;
+    context.fillText(sections - i + 1 , margin + 10 , y +  5);
+    context.moveTo(gridSize, y + 0.5);
+    context.lineTo(gridSize * (sections + 1), y + 0.5);
   }
 
   context.stroke();
@@ -60,8 +62,8 @@ var state = {
   endPoint: 0,
   currPoint : 0,
   deltaX : 0,
-  step : 1,
-  deltaY : 1,
+  step : 4,
+  deltaY : 4,
   resetState : function () {
     this.colorIndex = 0;
     this.colorPathIndex = 0;
@@ -87,6 +89,7 @@ var render = function(color) {
   context.beginPath();
   context.strokeStyle = color;
   if (state.deltaX === 0) {
+    console.log(state.currPoint);
     context.moveTo(state.currPoint[0] + 0.5, state.currPoint[1]);
     context.lineTo(state.currPoint[0] + state.deltaX + 0.5, state.currPoint[1] + state.deltaY);
   } else {
@@ -115,11 +118,12 @@ function frame() {
   }
   if (state.colorIndex < paths.length) {
     render(color[state.colorIndex]);
-    // console.log(line[state.point]);
-    if (state.distance(state.currPoint,state.endPoint) <= 1) {
+    state.updateCurr();
+    if (state.distance(state.currPoint,state.endPoint) <= 0) {
       state.point += 1;
-      state.deltaX = state.deltaX === 1 ? 0 : state.step;
-      state.deltaY = state.deltaY === 1 ? 0 : state.step;
+      state.deltaX = state.deltaX === 4 ? 0 : state.step;
+      state.deltaY = state.deltaY === 4 ? 0 : state.step;
+      console.log(state.startPoint, state.endPoint, state.currPoint);
       if (state.point >= line.length - 1) {
           state.point = 0;
           state.colorPathIndex += 1;
@@ -132,7 +136,6 @@ function frame() {
         state.resetPoints();
       }
     }
-    state.updateCurr();
     getAnimationFrame().then(frame);
   } else {
     return Promise.resolve();

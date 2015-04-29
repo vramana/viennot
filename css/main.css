@@ -1,0 +1,19 @@
+html, body {
+  margin : 0px;
+}
+#perm {
+  margin: 8px;
+}
+#main {
+  border-bottom-width: 1px;
+  border-bottom-color: blue;
+  border-bottom-style: solid;
+  height: 60px;
+  padding-top : 10px;
+  padding-left: 30px;
+}
+
+.part1 {
+  float : left;
+  display : inline-block;
+}

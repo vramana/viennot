@@ -1,29 +1,28 @@
 <html>
   <head>
     <title>Viennot's Geometric Constructions</title>
-    <style media="screen">
-      html, body {
-        margin : 0px;
-      }
-      canvas {
-        border: solid 1px #000;
-      }
-      #perm {
-        margin: 10px;
-      }
-    </style>
-    <script type="text/javascript" src="js/react.js"> </script>
-    <script type="text/javascript" src="js/JSXTransformer.js"> </script>
+    <meta name="viennot" content="content" charset="utf-8">
+    <script type="text/javascript" src="js/react.min.js"> </script>
+    <!-- <link href='http://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'> -->
+    <link rel="stylesheet" href="css/main.css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
     <div id="main">
+      Enter a line-permutation
       <input type="text" id="perm" value="125634">
-      <input type="button" id="compute" value="Compute">
+      <input type="button" id="compute" value="Compute SYT">
     </div>
+    <div class="part1">
+      <div class="animation">
+        <canvas id='canvas' width='500' height='500'> </canvas>
+      </div>
+      <div id="syt">
 
-    <canvas id='canvas' width='500' height='500'> </canvas>
+      </div>
+    </div>
 
     <script src="js/viennot.js" > </script>
     <script src="js/canvas.js" > </script>
+    <script src="js/syt.js"> </script>
   </body>
 </html>

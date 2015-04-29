@@ -1,2 +1,5 @@
 app/
 node_modules
+js/.module-cache/
+jsx/.module-cache/
+jsx/js
