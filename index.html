@@ -2,16 +2,28 @@
   <head>
     <title>Viennot's Geometric Constructions</title>
     <style media="screen">
+      html, body {
+        margin : 0px;
+      }
       canvas {
         border: solid 1px #000;
+      }
+      #perm {
+        margin: 10px;
       }
     </style>
   </head>
   <body>
+    <div id="main">
+      <input type="text" id="perm" value="125634">
+      <input type="button" id="compute" value="Compute">
+    </div>
+
     <canvas id='canvas' width='650' height='500'> </canvas>
 
     <script src="./viennot.js" > </script>
     <script src="./canvas.js" > </script>
+    <script src="./appLogic.js" > </script>
 
   </body>
 </html>
