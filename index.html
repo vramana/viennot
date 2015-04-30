@@ -2,27 +2,26 @@
   <head>
     <title>Viennot's Geometric Constructions</title>
     <meta name="viennot" content="content" charset="utf-8">
-    <script type="text/javascript" src="js/react.min.js"> </script>
+    <script type="text/javascript" src="js/react.js"> </script>
     <!-- <link href='http://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'> -->
     <link rel="stylesheet" href="css/main.css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
+    <div id="app">
+
+    </div>
     <div id="main">
       Enter a line-permutation
       <input type="text" id="perm" value="125634">
-      <input type="button" id="compute" value="Compute SYT">
+      <input type="button" id="compute" value="Compute">
     </div>
-    <div class="part1">
-      <div class="animation">
-        <canvas id='canvas' width='500' height='500'> </canvas>
-      </div>
-      <div id="syt">
-
-      </div>
+    <div id="animation">
+      <div id="syt"> </div>
+      <canvas id='canvas' width='500' height='500'> </canvas>
     </div>
 
-    <script src="js/viennot.js" > </script>
     <script src="js/canvas.js" > </script>
     <script src="js/syt.js"> </script>
+    <script src="js/viennot.js" > </script>
   </body>
 </html>

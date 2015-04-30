@@ -1,20 +1,24 @@
 /* jshint browser: true*/
 'use strict';
 
-var sections = 10;
+var sections = 8;
 // var valMax = 10;
 // var valMin = 0;
 // var stepSize = 1;
 var gridSize = 40;
 var margin = 10;
-var xAxis = ['', '', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-
 
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
 function resetCanvas() {
   var i;
+
+  var xAxis = ['', '',];
+
+  for (i = 1; i <= sections; i++) {
+    xAxis.push(i.toString());
+  }
 
   context.fillStyle = '#0099ff';
   context.font = '20 pt Ubuntu';
@@ -51,7 +55,7 @@ var translateAxis = function(point) {
     return [ zeroX + point[0] * 40 , zeroY - point[1]*40 ];
 };
 
-var color = [ '#5b079c', '#27a033', '#fe546a', '#38e040',
+var colors = [ '#38e040', '#FF7E00', '#27a033', '#fe546a',
               '#6393f3', '#5d358f', '#ad3c56', '#fe546a'];
 
 var state = {
@@ -62,12 +66,14 @@ var state = {
   endPoint: 0,
   currPoint : 0,
   deltaX : 0,
-  step : 4,
-  deltaY : 4,
+  step : 8,
+  deltaY : 8,
   resetState : function () {
     this.colorIndex = 0;
     this.colorPathIndex = 0;
     this.point = 0;
+    this.deltaX = 0;
+    this.deltaY = 8;
     this.resetPoints();
   },
   distance : function(p1, p2) {
@@ -89,7 +95,6 @@ var render = function(color) {
   context.beginPath();
   context.strokeStyle = color;
   if (state.deltaX === 0) {
-    console.log(state.currPoint);
     context.moveTo(state.currPoint[0] + 0.5, state.currPoint[1]);
     context.lineTo(state.currPoint[0] + state.deltaX + 0.5, state.currPoint[1] + state.deltaY);
   } else {
@@ -117,13 +122,12 @@ function frame() {
     state.endPoint = line[state.point + 1];
   }
   if (state.colorIndex < paths.length) {
-    render(color[state.colorIndex]);
+    render(colors[state.colorIndex]);
     state.updateCurr();
     if (state.distance(state.currPoint,state.endPoint) <= 0) {
       state.point += 1;
-      state.deltaX = state.deltaX === 4 ? 0 : state.step;
-      state.deltaY = state.deltaY === 4 ? 0 : state.step;
-      console.log(state.startPoint, state.endPoint, state.currPoint);
+      state.deltaX = state.deltaX === 8 ? 0 : state.step;
+      state.deltaY = state.deltaY === 8 ? 0 : state.step;
       if (state.point >= line.length - 1) {
           state.point = 0;
           state.colorPathIndex += 1;
@@ -150,7 +154,13 @@ computeButton.onclick = function () {
   var permutation = perm.value.split('').map(function (x) {
     return parseInt(x);
   });
-  paths = viennot(permutation, true)[2];
+  var result = viennot(permutation, true);
+  var syt1 = result[0];
+  var syt2 = result[1];
+  paths = result[2];
+  context.clearRect(0,0,canvas.width,canvas.height);
+  sections = permutation.length + 1;
+  resetCanvas();
   paths = paths.map(function (colorPaths) {
     return colorPaths.map(function (line) {
       return line.map(function (point) {
@@ -158,8 +168,10 @@ computeButton.onclick = function () {
       });
     });
   });
-  context.clearRect(0,0,canvas.width,canvas.height);
-  resetCanvas();
   state.resetState();
   frame();
+  React.render(
+    React.createElement(Diagram, {syt1: syt1, syt2: syt2}),
+    document.getElementById('syt')
+  );
 };

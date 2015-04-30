@@ -1,5 +1,6 @@
 html, body {
   margin : 0px;
+  font-family : Roboto;
 }
 #perm {
   margin: 8px;
@@ -13,7 +14,52 @@ html, body {
   padding-left: 30px;
 }
 
-.part1 {
-  float : left;
+
+#syt {
+  padding : 20px;
+  width: 600px;
+  float: left;
+
+}
+
+.young {
+  margin-bottom: 25px;
+  min-width : 300px;
+  
+}
+
+.young span {
+  display: inline-block;
+  font-size : 1.4em;
+  font-family: 'Ubuntu';
+  padding-left : 10px;
+  margin-bottom : 7px;
+}
+
+#compute {
+  background-color : #3F51B5;
+  border-width: 0px;
+  border-radius : 3px;
+  color : white;
+  font-size : 1.3em;
+}
+
+
+#compute:hover {
+  background-color: #7986CB;
+}
+
+#compute:active {
+  background-color: #1A237E;
+}
+
+.ytBox {
+  margin : 4px;
+  font-size : 1.5em;
+  border: solid 2px;
   display : inline-block;
+  width : 35px;
+  height : 31px;
+  text-align : center;
+  padding-top : 4px;
 }
