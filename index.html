@@ -3,22 +3,41 @@
     <title>Viennot's Geometric Constructions</title>
     <meta name="viennot" content="content" charset="utf-8">
     <script type="text/javascript" src="js/react.min.js"> </script>
-    <!-- <link href='http://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'> -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/main.css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
-    <div id="app">
+    <div id="viennot">
+      <div id="main">
+        Enter a line-permutation
+        <input type="text" id="perm" value="125634">
+        <input type="button" id="compute" value="Compute">
+      </div>
+      <div id="animation">
+        <div id="syt"> </div>
+        <canvas id='canvas' width='500' height='500'> </canvas>
+      </div>
+      <div class="clear" style="clear: both">
 
+      </div>
     </div>
-    <div id="main">
-      Enter a line-permutation
-      <input type="text" id="perm" value="125634">
-      <input type="button" id="compute" value="Compute">
+    <div id="inverseViennot">
+      <span> Inverse Viennot Geometric Construction </span>
+      <div class="syt-labels">
+        <span>SYT 1</span>
+        <span>SYT 2</span>
+      </div>
+      <textarea id='syt1'></textarea>
+      <textarea id='syt2'></textarea>
+      <div id='compute-inverse'>
+        <input type="button" id="compute-inverse-button" value="Compute Inverse">
+        <div id="result-perm">
+          Permutation
+          <input type="text" id='perm' disabled value="">
+        </div>
+      </div>
     </div>
-    <div id="animation">
-      <div id="syt"> </div>
-      <canvas id='canvas' width='500' height='500'> </canvas>
-    </div>
+
 
     <script src="js/canvas.js" > </script>
     <script src="js/syt.js"> </script>
