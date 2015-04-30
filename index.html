@@ -11,7 +11,7 @@
       <div id="main">
         Enter a line-permutation
         <input type="text" id="perm" value="125634">
-        <input type="button" id="compute" value="Compute">
+        <input type="button" id="compute" value="Compute SYT">
       </div>
       <div id="animation">
         <div id="syt"> </div>
@@ -33,14 +33,14 @@
         <input type="button" id="compute-inverse-button" value="Compute Inverse">
         <div id="result-perm">
           Permutation
-          <input type="text" id='perm' disabled value="">
+          <input type="text" id='perm-inverse' disabled value="">
         </div>
       </div>
+      <canvas id='canvas-inverse' width='500' height='500'> </canvas>
     </div>
 
 
     <script src="js/canvas.js" > </script>
     <script src="js/syt.js"> </script>
-    <script src="js/viennot.js" > </script>
   </body>
 </html>

@@ -93,3 +93,12 @@ html, body {
 #result-perm {
   margin-top : 40px;
 }
+
+#perm-inverse {
+  margin-left : 10px;
+}
+
+#canvas-inverse {
+  margin-top : 50px;
+  margin-left : 150px;
+}

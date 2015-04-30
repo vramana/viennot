@@ -130,17 +130,120 @@ var viennot = function(perm, path) {
   }
 };
 
+var inverseDescendOnce = function (n, cols, stairPoints, point, path, nsp) {
+  var spRight, newPts, strPt, i;
+
+  if (point === undefined) {
+    point = [];
+  }
+  if (path === undefined) {
+    path = [];
+  }
+  if (nsp === undefined) {
+    nsp = [];
+  }
+
+  if (path.length === 0) {
+    point = [cols[0], n+1];
+    path.push(point);
+  }
+
+  spRight = stairPoints.filter(function (x) {
+    return (x[0] > point[0]) && (x[1] > cols[1]);
+  });
+
+  if (spRight.length === 0) {
+    path = path.concat([[point[0], cols[1]], [n+1, cols[1]]]);
+    nsp.push([point[0], cols[1]]);
+    return [path, stairPoints, nsp];
+  } else {
+    spRight = spRight.sort(function(x) {
+      return x[1];
+    });
+    spRight.reverse();
+    strPt = spRight[0];
+
+    newPts = stairPoints.slice(0);
+    i = stairPoints.indexOf(strPt);
+    newPts = i === 0 ? newPts.slice(1) : newPts.splice(0, i).concat(newPts.splice(i+1));
+    path = path.concat([[point[0], strPt[1]] , strPt]);
+    nsp.push([point[0], strPt[1]]);
+    return inverseDescendOnce(n, cols, newPts, strPt, path, nsp);
+  }
+};
+
+var inverseDescendAll = function (n, row1, row2, stairPoints, i, paths, nsp) {
+  if (i === undefined) {
+    i = 0;
+  }
+  if (paths === undefined) {
+    paths = [];
+  }
+  if (nsp === undefined) {
+    nsp = [];
+  }
+
+  if (i >= row1.length) {
+    return [nsp, paths];
+  } else {
+    var result;
+    result = inverseDescendOnce(n, [row1[row1.length - i - 1], row2[row1.length - i - 1]], stairPoints);
+    paths.push(result[0]);
+    nsp = nsp.concat(result[2]);
+    return inverseDescendAll(n, row1, row2, result[1], i+1, paths, nsp);
+  }
+};
+
+var inverseViennotHelper = function(n, syt1, syt2, i, stairPoints, paths ) {
+  if (i === undefined) {
+    i = 0;
+  }
+  if (stairPoints === undefined) {
+    stairPoints = [];
+  }
+  if (paths === undefined) {
+    paths = [];
+  }
+
+  if (i >= syt1.length) {
+    var permutation;
+    permutation = stairPoints.slice(0);
+    permutation = permutation.sort(function (x, y ) {
+      return x[0] > y[0];
+    });
+    permutation = permutation.map(function (x) {return x[1];});
+    return [permutation, paths];
+  } else {
+    var row1, row2, result;
+    row1 = syt1[syt1.length - i - 1];
+    row2 = syt2[syt1.length - i - 1];
+    result = inverseDescendAll(n, row1, row2, stairPoints);
+    paths.push(result[1]);
+    return inverseViennotHelper(n, syt1, syt2, i + 1, result[0], paths);
+  }
+};
+
+var inverseViennot = function(syt1, syt2) {
+  var n;
+  n = syt1.map(function (x) {return x.length;}).reduce(function (x, y) {
+    return x + y;
+  }, 0);
+
+  return inverseViennotHelper(n, syt1, syt2);
+};
+
+console.log(inverseViennot([[1, 2, 3], [4, 5, 6]], [[1, 3, 5], [2, 4, 6]]));
+
 var sections = 8;
-// var valMax = 10;
-// var valMin = 0;
-// var stepSize = 1;
 var gridSize = 40;
 var margin = 10;
 
 var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
+var contextNormal = canvas.getContext('2d');
+var canvasInverse = document.getElementById('canvas-inverse');
+var contextInverse = canvasInverse.getContext('2d');
 
-function resetCanvas() {
+function resetCanvas(context) {
   var i;
 
   var xAxis = ['', '',];
@@ -174,7 +277,8 @@ function resetCanvas() {
   context.stroke();
 }
 
-resetCanvas();
+resetCanvas(contextNormal);
+resetCanvas(contextInverse);
 
 var paths;
 
@@ -184,8 +288,8 @@ var translateAxis = function(point) {
     return [ zeroX + point[0] * 40 , zeroY - point[1]*40 ];
 };
 
-var colors = [ '#38e040', '#FF7E00', '#27a033', '#fe546a',
-              '#6393f3', '#5d358f', '#ad3c56', '#fe546a'];
+var colors = [ '#27a033', '#fe546a', '#6393f3', '#5d358f',
+               '#38e040', '#FF7E00',  '#ad3c56', '#fe546a' ];
 
 var state = {
   colorIndex : 0,
@@ -209,18 +313,18 @@ var state = {
     return Math.abs(p2[0] - p1[0]) + Math.abs(p2[1] - p1[1]);
   },
   updateCurr : function () {
-    state.currPoint[0] = state.currPoint[0] + this.deltaX;
-    state.currPoint[1] = state.currPoint[1] + this.deltaY;
+    this.currPoint[0] = this.currPoint[0] + this.deltaX;
+    this.currPoint[1] = this.currPoint[1] + this.deltaY;
   },
   resetPoints : function () {
     var line = paths[this.colorIndex][this.colorPathIndex];
-    this.startPoint = line[state.point];
+    this.startPoint = line[this.point];
     this.currPoint = Object.create(this.startPoint);
-    this.endPoint = line[state.point + 1];
+    this.endPoint = line[this.point + 1];
   }
 };
 
-var render = function(color) {
+var render = function(context, color) {
   context.beginPath();
   context.strokeStyle = color;
   if (state.deltaX === 0) {
@@ -251,7 +355,7 @@ function frame() {
     state.endPoint = line[state.point + 1];
   }
   if (state.colorIndex < paths.length) {
-    render(colors[state.colorIndex]);
+    render(contextNormal, colors[state.colorIndex]);
     state.updateCurr();
     if (state.distance(state.currPoint,state.endPoint) <= 0) {
       state.point += 1;
@@ -275,6 +379,41 @@ function frame() {
   }
 }
 
+function frameInverse() {
+  var line;
+  if (state.colorIndex < paths.length) {
+    line = paths[state.colorIndex][state.colorPathIndex];
+  }
+  if (state.colorIndex === 0 && state.colorPathIndex === 0 && state.point === 0) {
+    state.startPoint = line[state.point];
+    state.currPoint = state.startPoint;
+    state.endPoint = line[state.point + 1];
+  }
+  if (state.colorIndex < paths.length) {
+    render(contextInverse, colors[state.colorIndex]);
+    state.updateCurr();
+    if (state.distance(state.currPoint,state.endPoint) <= 0) {
+      state.point += 1;
+      state.deltaX = state.deltaX === 8 ? 0 : state.step;
+      state.deltaY = state.deltaY === 8 ? 0 : state.step;
+      if (state.point >= line.length - 1) {
+          state.point = 0;
+          state.colorPathIndex += 1;
+          if (state.colorPathIndex >= paths[state.colorIndex].length) {
+            state.colorPathIndex = 0;
+            state.colorIndex += 1;
+          }
+      }
+      if (state.colorIndex < paths.length) {
+        state.resetPoints();
+      }
+    }
+    getAnimationFrame().then(frameInverse);
+  } else {
+    return Promise.resolve();
+  }
+}
+
 var computeButton = document.getElementById('compute');
 var perm = document.getElementById('perm');
 
@@ -287,9 +426,9 @@ computeButton.onclick = function () {
   var syt1 = result[0];
   var syt2 = result[1];
   paths = result[2];
-  context.clearRect(0,0,canvas.width,canvas.height);
+  contextNormal.clearRect(0,0,canvas.width,canvas.height);
   sections = permutation.length + 1;
-  resetCanvas();
+  resetCanvas(contextNormal);
   paths = paths.map(function (colorPaths) {
     return colorPaths.map(function (line) {
       return line.map(function (point) {
@@ -308,7 +447,8 @@ computeButton.onclick = function () {
 var youngTableaux1 = document.getElementById('syt1');
 var youngTableaux2 = document.getElementById('syt2');
 var computeInverseButton = document.getElementById('compute-inverse-button');
-var resultPermutation = document.getElementById('result-perm');
+var resultPermutation = document.getElementById('perm-inverse');
+var resultInverse;
 
 computeInverseButton.onclick = function () {
   var syt1 = youngTableaux1.value.split('\n').map(function (row) {
@@ -323,10 +463,20 @@ computeInverseButton.onclick = function () {
     });
   });
 
-  var result = inverseViennot(syt1, syt2);
-  var permutation = result[0];
-  paths = result[1];
-  resultPermutation.value = permutation.toString();
-
-
+  resultInverse = inverseViennot(syt1, syt2);
+  var permutation = resultInverse[0];
+  paths = resultInverse[1];
+  resultPermutation.value = '      ' + permutation.reduce(function(x,y) {return x.toString() + y; }, '');
+  contextInverse.clearRect(0,0,canvas.width,canvas.height);
+  sections = permutation.length + 1;
+  resetCanvas(contextInverse);
+  paths = paths.map(function (colorPaths) {
+    return colorPaths.map(function (line) {
+      return line.map(function (point) {
+        return translateAxis(point);
+      });
+    });
+  });
+  state.resetState();
+  frameInverse();
 };
