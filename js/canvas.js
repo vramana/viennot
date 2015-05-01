@@ -418,7 +418,7 @@ var perm = document.getElementById('perm');
 
 
 computeButton.onclick = function () {
-  var permutation = perm.value.split('').map(function (x) {
+  var permutation = perm.value.split(',').map(function (x) {
     return parseInt(x);
   });
   var result = viennot(permutation, true);
