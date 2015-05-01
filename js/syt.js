@@ -18,7 +18,7 @@ var YoungTabluex = React.createClass({displayName: "YoungTabluex",
     });
     return (
       React.createElement("div", {className: "young"}, 
-        React.createElement("span", null, "  ", 'SYT ' + this.props.number, " "), 
+        React.createElement("span", null, "  ", this.props.number === 0 ? 'Recording Tableaux' : 'Insertion Tableaux', " "), 
         rows
       )
     );

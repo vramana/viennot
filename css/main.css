@@ -80,8 +80,8 @@ html, body {
 .syt-labels span {
   display: inline-block
   font-size : 1.4em;
-  padding-left : 100px;
-  padding-right: 100px;
+  padding-left : 80px;
+  padding-right: 10px;
 }
 
 #compute-inverse {
