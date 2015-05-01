@@ -305,7 +305,7 @@ var state = {
     this.colorPathIndex = 0;
     this.point = 0;
     this.deltaX = 0;
-    this.deltaY = 8;
+    this.deltaY = this.step;
     this.resetPoints();
   },
   distance : function(p1, p2) {
@@ -358,8 +358,8 @@ function frame() {
     state.updateCurr();
     if (state.distance(state.currPoint,state.endPoint) <= 0) {
       state.point += 1;
-      state.deltaX = state.deltaX === 8 ? 0 : state.step;
-      state.deltaY = state.deltaY === 8 ? 0 : state.step;
+      state.deltaX = state.deltaX === state.step ? 0 : state.step;
+      state.deltaY = state.deltaY === state.step ? 0 : state.step;
       if (state.point >= line.length - 1) {
           state.point = 0;
           state.colorPathIndex += 1;
@@ -393,8 +393,8 @@ function frameInverse() {
     state.updateCurr();
     if (state.distance(state.currPoint,state.endPoint) <= 0) {
       state.point += 1;
-      state.deltaX = state.deltaX === 8 ? 0 : state.step;
-      state.deltaY = state.deltaY === 8 ? 0 : state.step;
+      state.deltaX = state.deltaX === state.step ? 0 : state.step;
+      state.deltaY = state.deltaY === state.step ? 0 : state.step;
       if (state.point >= line.length - 1) {
           state.point = 0;
           state.colorPathIndex += 1;
@@ -425,6 +425,8 @@ computeButton.onclick = function () {
   var syt1 = result[0];
   var syt2 = result[1];
   paths = result[2];
+  canvas.width = (permutation.length + 3) * (40);
+  canvas.height = (permutation.length + 3) * (40);
   contextNormal.clearRect(0,0,canvas.width,canvas.height);
   sections = permutation.length + 1;
   resetCanvas(contextNormal);
@@ -466,6 +468,8 @@ computeInverseButton.onclick = function () {
   var permutation = resultInverse[0];
   paths = resultInverse[1];
   resultPermutation.value = '      ' + permutation.reduce(function(x,y) {return x.toString() + y; }, '');
+  canvasInverse.width = (permutation.length + 3) * (40);
+  canvasInverse.height = (permutation.length + 3) * (40);
   contextInverse.clearRect(0,0,canvas.width,canvas.height);
   sections = permutation.length + 1;
   resetCanvas(contextInverse);
